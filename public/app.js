@@ -31,7 +31,7 @@ window.downloadMemberQr=function(){const canvas=el('qr-preview-code')?.querySele
 let lastScannedToken='',lastScannedAt=0,scanInProgress=false,cashierScanner=null;
 function cashierDate(value){if(!value)return '—';const date=new Date(value);return Number.isNaN(date.getTime())?'—':new Intl.DateTimeFormat('en-PH',{dateStyle:'medium',timeStyle:'short',timeZone:'Asia/Manila'}).format(date)}
 function scanMessage(text,isError=false){const line=el('scan-status');if(line){line.textContent=text;line.className='scan-status'+(isError?' error':'')};if(isError)say(text)}
-function resumeCashierScanner(){const result=el('result');if(result)result.hidden=true;const button=el('scan-again');if(button)button.hidden=true;lastScannedToken='';lastScannedAt=0;try{cashierScanner?.resume()}catch(_){}scanMessage('Scanner is ready. Point your camera at the next membership QR code.')}
+function resumeCashierScanner(){const result=el('result');if(result)result.hidden=true;const button=el('scan-again');if(button)button.hidden=true;lastScannedToken='';lastScannedAt=0;try{if(cashierScanner?.getState()===3)cashierScanner.resume();else if(cashierScanner?.getState()!==2)startCashierCamera()}catch(_){startCashierCamera()}scanMessage('Scanner is ready. Point your camera at the next membership QR code.')}
 async function verifyQrImage(file){
  if(!file)return;
  if(!el('branch')?.value.trim()){scanMessage('Select your branch first, then upload the QR image.',true);el('branch')?.focus();return}
@@ -78,4 +78,32 @@ async function loadCashierHistory(){
  target.className='history-table-wrap';
  target.innerHTML='<table class="history-table"><thead><tr><th>Date and time</th><th>Customer details</th><th>Branch</th><th>Cashier</th><th>Result</th></tr></thead><tbody>'+rows.map(m=>'<tr><td>'+esc(cashierDate(m.verified_at))+'</td><td><strong>'+esc(m.member_name||'Unknown QR')+'</strong><small>'+esc(m.member_number||'No member number')+' · '+esc(m.membership_category||'—')+'</small><small>'+esc(m.email||'')+'</small><small>'+esc(m.phone||'')+'</small></td><td>'+esc(m.branch_name||'Not recorded')+'</td><td>'+esc(m.cashier_name||'Staff')+'</td><td><span class="member-status '+(m.result==='valid'?'approved':'rejected')+'">'+esc(m.result||'unknown')+'</span></td></tr>').join('')+'</tbody></table>';
 }
-async function init(){const{data:{user}}=await db.auth.getUser();el('auth').hidden=!!user;el('signed').hidden=!user;if(!user)return;el('who').textContent=user.email;if(location.pathname.startsWith('/admin'))return admin();if(location.pathname.startsWith('/cashier')){if(!['cashier','admin'].includes(await role()))return say('Cashier access only.');el('scanner').hidden=false;try{el('branch').value=localStorage.getItem('nishlan_cashier_branch')||'';el('branch').addEventListener('change',()=>localStorage.setItem('nishlan_cashier_branch',el('branch').value.trim()))}catch(_){}await loadCashierHistory();if(window.Html5QrcodeScanner){scanMessage('Scanner loaded. Select your branch and aim the camera at a QR code. You can also upload its image.');cashierScanner=new Html5QrcodeScanner('camera',{fps:8,qrbox:240,rememberLastUsedCamera:true},false);cashierScanner.render(decoded=>{scanMessage('QR detected by camera. Verifying membership…');verifyToken(decoded)},()=>{})}return}el('application').hidden=false;await member()}document.addEventListener('DOMContentLoaded',init);
+let cashierCameraStarting=false;
+async function startCashierCamera(){
+ if(cashierCameraStarting)return;
+ const camera=el('camera');
+ if(!camera)return;
+ if(!window.isSecureContext){scanMessage('Camera requires HTTPS. Open the official secure Nishlan website.',true);return}
+ if(!window.Html5Qrcode){scanMessage('Camera scanner library has not loaded. Check your connection and reload.',true);return}
+ cashierCameraStarting=true;const trigger=el('start-camera');if(trigger)trigger.disabled=true;
+ try{
+  if(cashierScanner){try{if(cashierScanner.getState()===2)await cashierScanner.stop()}catch(_){}try{await cashierScanner.clear()}catch(_){}}
+  camera.innerHTML='';
+  cashierScanner=new Html5Qrcode('camera',{verbose:false});
+  const onDecoded=decoded=>{scanMessage('QR recognized! Verifying membership…');void verifyToken(decoded)};
+  const config={fps:12,qrbox:(w,h)=>({width:Math.min(250,Math.round(w*.73)),height:Math.min(250,Math.round(h*.73))}),aspectRatio:1.3333333};
+  try{
+   await cashierScanner.start({facingMode:'environment'},config,onDecoded,()=>{});
+  }catch(primary){
+   const cameras=await Html5Qrcode.getCameras();
+   if(!cameras.length)throw primary;
+   const rear=cameras.find(c=>/back|rear|environment/i.test(c.label))||cameras[0];
+   await cashierScanner.start(rear.id,config,onDecoded,()=>{});
+  }
+  scanMessage('Camera is scanning. Hold the member QR code inside the frame.');
+ }catch(error){
+  const message=String(error?.message||error);
+  scanMessage(/NotAllowed|Permission|denied/i.test(message)?'Camera permission denied. Allow camera access for this site in your browser settings, then press Start / restart camera.':'Camera could not start: '+message+'. Press Start / restart camera to retry.',true);
+ }finally{cashierCameraStarting=false;if(trigger)trigger.disabled=false}
+}
+async function init(){const{data:{user}}=await db.auth.getUser();el('auth').hidden=!!user;el('signed').hidden=!user;if(!user)return;el('who').textContent=user.email;if(location.pathname.startsWith('/admin'))return admin();if(location.pathname.startsWith('/cashier')){if(!['cashier','admin'].includes(await role()))return say('Cashier access only.');el('scanner').hidden=false;try{el('branch').value=localStorage.getItem('nishlan_cashier_branch')||'';el('branch').addEventListener('change',()=>localStorage.setItem('nishlan_cashier_branch',el('branch').value.trim()))}catch(_){}await loadCashierHistory();scanMessage('Starting the camera. Select your branch for verification.');await startCashierCamera()return}el('application').hidden=false;await member()}document.addEventListener('DOMContentLoaded',init);
