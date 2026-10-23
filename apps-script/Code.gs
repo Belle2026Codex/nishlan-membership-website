@@ -34,3 +34,8 @@ function doPost(e) {
 }
 function escapeHtml_(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
 function json_(data){return ContentService.createTextOutput(JSON.stringify(data)).setMimeType(ContentService.MimeType.JSON)}
+
+// Public health check. Never reveal the private security secret.
+function doGet(e) {
+  return json_({ok:true,service:'Nishlan Membership Email System',ready:!!PropertiesService.getScriptProperties().getProperty('NISHLAN_EMAIL_SECRET')});
+}
