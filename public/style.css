@@ -103,3 +103,15 @@ header nav>a{font-size:13px;font-weight:600;padding:10px 11px}
 .member-clarity strong{font:normal 22px Georgia,serif;color:#174831}
 .member-clarity p{margin:8px 0 0;color:#586452;line-height:1.75;font-size:14px}
 @media(max-width:690px){.membership-details,.journey{grid-template-columns:1fr}.membership-details{padding:17px;gap:13px}.membership-how{padding:22px 19px 28px}.membership-top{padding:33px 24px}.member-type{padding:24px}.journey-step{padding:17px}.membership-feature{margin:30px 0 40px}}
+
+/* Nishlan: reasons to join */
+.why-membership{padding:38px clamp(24px,4vw,46px) 28px;background:linear-gradient(145deg,#fff9ee,#f8f3e9);border-bottom:1px solid #e9ddca}
+.why-membership h3{font:normal clamp(27px,3.2vw,37px)/1.22 Georgia,serif;color:#16432d;margin:0 0 13px;max-width:810px}
+.why-intro{font-size:15px;line-height:1.8;color:#5a6455;max-width:750px;margin:0 0 24px}
+.why-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}
+.why-card{background:#fff;border:1px solid #e5d9c5;border-radius:15px;padding:25px 20px 20px;box-shadow:0 9px 25px #45301a0c}
+.why-icon{display:flex;align-items:center;justify-content:center;width:46px;height:46px;background:#eaf0e5;color:#1d5b3b;border-radius:13px;font-size:25px;margin-bottom:16px}
+.why-card h4{font-size:16px;color:#173f2d;margin:0 0 10px;line-height:1.4}
+.why-card p{font-size:13px;color:#607063;line-height:1.75;margin:0}
+.why-disclaimer{border-left:3px solid #be9558;padding:10px 15px;margin:24px 0 0;font-size:12px;line-height:1.75;color:#77634c;background:#f5ecdf;border-radius:0 9px 9px 0}
+@media(max-width:730px){.why-grid{grid-template-columns:1fr}.why-membership{padding:30px 22px 24px}.why-card{padding:20px}.why-icon{margin-bottom:10px}}
