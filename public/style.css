@@ -4,3 +4,33 @@
 /* Refined cream + forest green with subtle actual chocolate pieces */:root{color:#203a2d;background:#fbf8f1}body{background:linear-gradient(135deg,#fffdf8 0%,#f8f3e9 60%,#fffdf9 100%)}header{background:#fffdf9ee;border-bottom:1px solid #e9dfcf}header b{color:#163f2b}header nav a{color:#304b38}header nav a:hover{background:#edf4e8}main{margin-top:28px}.hero{position:relative;overflow:hidden;min-height:420px;background:linear-gradient(105deg,#fffaf0 0%,#f6efe1 64%,#ead7bf 100%);border:1px solid #eadcc8;box-shadow:0 12px 35px #44260f12;color:#163c2b;padding:clamp(28px,5vw,58px)}.hero h1{color:#153e2d;max-width:580px;font-family:Georgia,serif;font-size:clamp(38px,5.4vw,65px);line-height:1.03}.hero h1 span{letter-spacing:.055em}.hero h2{font-family:Georgia,serif;color:#4c2b19;font-size:clamp(21px,3vw,31px);margin-top:-7px}.hero p{color:#506155;max-width:470px;font-size:17px}.hero .eyebrow{color:#547d32}.hero .action{background:#12452e;color:#fff}.hero .action.secondary{background:#fffaf1;color:#34503a;border:1px solid #b9c6ac}.chocolate-display{position:absolute;right:4%;top:25%;width:225px;height:210px;transform:rotate(-12deg);pointer-events:none}.choc-piece{display:grid;grid-template-columns:repeat(2,1fr);gap:5px;width:165px;height:165px;padding:9px;border:7px solid #4b2514;border-radius:16px;background:#67381e;box-shadow:13px 16px 22px #43220d45,inset 0 0 8px #2a120d}.choc-piece i{border-radius:6px;background:linear-gradient(135deg,#ab6840 0%,#6a321c 43%,#3f1b10 100%);box-shadow:inset 3px 3px 5px #db9866,inset -3px -4px 6px #2b110b}.choc-leaf{position:absolute;top:-26px;right:15px;font-size:45px;color:#4b7c3e}.benefit-strip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:0 0 36px}.benefit-strip>div{padding:18px 20px;background:#fff;border:1px solid #eee3d7;border-radius:14px;color:#9e671d;font-size:23px}.benefit-strip strong{display:inline-block;color:#244633;font-size:15px;margin-left:10px}.benefit-strip small{display:block;font-size:12px;color:#778073;margin:7px 0 0 35px}.feature,.card,.branch-card{border-color:#eee3d6;box-shadow:0 7px 24px #49301c0b}.branch-cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-top:20px}.branch-card{background:#fff;padding:22px 14px;border:1px solid #e8dfd1;border-radius:14px}.branch-card span{display:block;color:#bd842c;font-size:27px}.branch-card strong{display:block;color:#224c34;margin:8px 0}.branch-card small{display:block;color:#697469;line-height:1.6}footer{background:#143c2b}#join{background:#fffaf3;border:1px solid #efe4d4;border-radius:18px;padding:25px;margin:20px 0}@media(max-width:750px){.chocolate-display{opacity:.25;right:-35px;top:30%;transform:rotate(-12deg) scale(.8)}.hero>*:not(.chocolate-display){position:relative;z-index:1}.benefit-strip{grid-template-columns:1fr}.branch-cards{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:460px){.chocolate-display{opacity:.13}.branch-cards{grid-template-columns:1fr}.hero{min-height:auto}.hero h1{font-size:42px}}
 
 /* Registration awaiting secure service */.registration-card{max-width:780px!important}.registration-card h3{font-size:25px;color:#164b30}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 20px}.registration-card input:disabled,.registration-card select:disabled{background:#f5f5f0;color:#777;cursor:not-allowed}.registration-card button:disabled{opacity:.65;cursor:not-allowed}.setup-notice{background:#fff4df;border-left:4px solid #bb8a3b;padding:13px 15px;color:#5e4930;line-height:1.6}.form-note{color:#6a746a;font-size:13px;line-height:1.6}@media(max-width:600px){.form-grid{grid-template-columns:1fr}}
+/* Premium Nishlan finish */
+:root{--forest:#173f2d;--gold:#b88a47;--cream:#fbf7ef}
+body{color:var(--forest);background:radial-gradient(ellipse at 10% 3%,#f5e9d5 0%,transparent 34%),linear-gradient(160deg,#fffdf8,#f6f0e6)}
+header{position:relative;z-index:5;background:#fffdf8f5;box-shadow:0 7px 25px #2c271c0b;border-bottom:1px solid #e9dfcf}
+.brand img{width:76px;height:76px;object-fit:contain;background:white;border:2px solid #e8d9be;padding:3px;box-shadow:0 4px 14px #153c2c14}
+header b{font-family:Georgia,serif;font-size:26px;letter-spacing:.09em}
+header small{font-size:11px!important;letter-spacing:.07em}
+header nav a{transition:background .2s,color .2s}
+.hero{background:linear-gradient(112deg,#fffdf7 0%,#f7efdf 62%,#e9d8bc 100%);border:1px solid #e7d7bb;box-shadow:0 24px 55px #49301c18;border-radius:25px}
+.hero .eyebrow{font-size:11px;letter-spacing:.22em}
+.hero h1{font-size:clamp(43px,6vw,72px);letter-spacing:-.045em}
+.hero h1 span{color:#174c32;letter-spacing:.08em}
+.hero h2{color:#70502e;font-size:clamp(21px,3vw,32px)}
+.action,button{box-shadow:0 6px 16px #183e291b;transition:transform .18s,box-shadow .18s,background .18s}
+.action:hover,button:not(:disabled):hover{transform:translateY(-2px);box-shadow:0 10px 22px #183e292b}
+.feature,.branch-card,.card{background:#fffefb;border:1px solid #eadfce;box-shadow:0 12px 35px #48321a0d;transition:transform .2s,box-shadow .2s}
+.feature:hover,.branch-card:hover{transform:translateY(-3px);box-shadow:0 16px 40px #48321a16}
+.info-section h2{font-family:Georgia,serif;letter-spacing:-.025em}
+.eyebrow{color:#94703c}
+.registration-card{border-top:4px solid var(--gold);padding:clamp(22px,4vw,40px)}
+.registration-card h3{font-family:Georgia,serif;font-size:29px}
+.registration-card input,.registration-card select{background:#fffdfa;border-color:#d9cdbb}
+.registration-card button{margin-top:18px;padding:16px}
+.consent{display:flex;align-items:flex-start;gap:10px;font-size:13px;font-weight:500;line-height:1.6}
+.consent input{width:18px;height:18px;margin:2px 0 0;flex-shrink:0}
+.trap{position:absolute!important;left:-9999px!important;opacity:0}
+#registration-status{font-weight:700;line-height:1.5}
+#registration-status.success{color:#17613e}
+#registration-status.error{color:#a23e31}
+@media(max-width:600px){.brand img{width:62px;height:62px}.hero{padding:32px 25px}.registration-card{padding:22px}}
