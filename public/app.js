@@ -24,4 +24,33 @@ async function admin(){
  }catch(err){say(err.message||'Unable to complete review.');b.disabled=false}
  };
 }
-async function verifyToken(token){if(!['cashier','admin'].includes(await role()))return say('Not authorized');const{data,error}=await db.rpc('verify_nishlan_member',{p_qr_token:token.trim()});if(error)return say(error.message);el('result').textContent=JSON.stringify(data,null,2)}async function init(){const{data:{user}}=await db.auth.getUser();el('auth').hidden=!!user;el('signed').hidden=!user;if(!user)return;el('who').textContent=user.email;if(location.pathname.startsWith('/admin'))return admin();if(location.pathname.startsWith('/cashier')){if(!['cashier','admin'].includes(await role()))return say('Cashier access only.');el('scanner').hidden=false;if(window.Html5QrcodeScanner){const scanner=new Html5QrcodeScanner('camera',{fps:10,qrbox:240},false);scanner.render(t=>verifyToken(t),()=>{})}return}el('application').hidden=false;await member()}document.addEventListener('DOMContentLoaded',init);
+let lastScannedToken='',lastScannedAt=0,scanInProgress=false;
+function cashierDate(value){if(!value)return '—';const date=new Date(value);return Number.isNaN(date.getTime())?'—':new Intl.DateTimeFormat('en-PH',{dateStyle:'medium',timeStyle:'short',timeZone:'Asia/Manila'}).format(date)}
+async function verifyToken(token){
+ if(!['cashier','admin'].includes(await role()))return say('Staff authorization is required.');
+ const branch=el('branch')?.value.trim()||'';
+ if(branch.length<2||branch.length>100){say('Please enter your branch before scanning a QR code.');el('branch')?.focus();return}
+ const code=String(token||'').trim();if(!code){say('Please scan the QR card or enter its token.');return}
+ if(scanInProgress||code===lastScannedToken&&Date.now()-lastScannedAt<12000)return;
+ scanInProgress=true;lastScannedToken=code;lastScannedAt=Date.now();say('');
+ const button=el('verify-button');if(button)button.disabled=true;
+ try{
+ const {data,error}=await db.rpc('nishlan_verify_at_branch',{p_qr_token:code,p_branch:branch});
+ if(error)throw error;
+ const status=String(data?.verification_status||'INVALID').toUpperCase();
+ const approved=status==='VALID';
+ const result=el('result');result.hidden=false;result.className='cashier-result '+(approved?'is-valid':'is-invalid');
+ result.innerHTML='<div class="cashier-result-badge">'+esc(status)+'</div><h3>'+esc(data?.member_name||'Unrecognized QR code')+'</h3><div class="cashier-result-meta"><span><b>Membership number</b>'+esc(data?.membership_number||'—')+'</span><span><b>Category</b>'+esc(data?.membership_category||'—')+'</span><span><b>Branch</b>'+esc(branch)+'</span><span><b>Verified on</b>'+esc(cashierDate(new Date().toISOString()))+'</span></div>';
+ el('token').value='';await loadCashierHistory();
+ }catch(error){say(error.message||'Unable to verify QR code.')}finally{scanInProgress=false;if(button)button.disabled=false}
+}
+async function loadCashierHistory(){
+ const target=el('cashier-history');if(!target)return;
+ const {data,error}=await db.rpc('nishlan_cashier_history',{p_limit:100});
+ if(error){target.textContent='Unable to load verification history: '+error.message;return}
+ const rows=Array.isArray(data)?data:[];
+ if(!rows.length){target.className='admin-empty';target.textContent='No QR verifications recorded yet. Your scans will appear here.';return}
+ target.className='history-table-wrap';
+ target.innerHTML='<table class="history-table"><thead><tr><th>Date and time</th><th>Customer details</th><th>Branch</th><th>Cashier</th><th>Result</th></tr></thead><tbody>'+rows.map(m=>'<tr><td>'+esc(cashierDate(m.verified_at))+'</td><td><strong>'+esc(m.member_name||'Unknown QR')+'</strong><small>'+esc(m.member_number||'No member number')+' · '+esc(m.membership_category||'—')+'</small><small>'+esc(m.email||'')+'</small><small>'+esc(m.phone||'')+'</small></td><td>'+esc(m.branch_name||'Not recorded')+'</td><td>'+esc(m.cashier_name||'Staff')+'</td><td><span class="member-status '+(m.result==='valid'?'approved':'rejected')+'">'+esc(m.result||'unknown')+'</span></td></tr>').join('')+'</tbody></table>';
+}
+async function init(){const{data:{user}}=await db.auth.getUser();el('auth').hidden=!!user;el('signed').hidden=!user;if(!user)return;el('who').textContent=user.email;if(location.pathname.startsWith('/admin'))return admin();if(location.pathname.startsWith('/cashier')){if(!['cashier','admin'].includes(await role()))return say('Cashier access only.');el('scanner').hidden=false;try{el('branch').value=localStorage.getItem('nishlan_cashier_branch')||'';el('branch').addEventListener('change',()=>localStorage.setItem('nishlan_cashier_branch',el('branch').value.trim()))}catch(_){}await loadCashierHistory();if(window.Html5QrcodeScanner){const scanner=new Html5QrcodeScanner('camera',{fps:8,qrbox:240},false);scanner.render(t=>verifyToken(t),()=>{})}return}el('application').hidden=false;await member()}document.addEventListener('DOMContentLoaded',init);
