@@ -162,3 +162,12 @@ header nav>a{font-size:13px;font-weight:600;padding:10px 11px}
 #qr-preview-code img,#qr-preview-code canvas{max-width:100%;height:auto}
 .qr-preview-card button{margin:10px 8px 0 0}
 .history-table .resend-email{display:block;white-space:nowrap;width:auto!important;font-size:12px!important;padding:9px 11px!important;margin-top:9px!important}
+
+/* Show cashier verification outcome prominently, without scrolling past camera */
+.scan-status{font-size:14px;font-weight:750;line-height:1.65;padding:15px 18px;border-radius:12px;background:#e8f0e5;border:1px solid #c8dbc7;color:#205038;margin:20px 0 10px}
+.scan-status.error{background:#fff2e9;border-color:#e9c0ab;color:#923c2a}
+.cashier-scan-actions{display:flex;justify-content:flex-end;gap:10px}
+.cashier-scan-actions button{margin:4px 0 12px!important}
+.cashier-checkin #result{margin:12px 0 12px!important}
+.cashier-checkin #result[hidden],#scan-again[hidden]{display:none!important}
+.cashier-checkin .cashier-camera{margin:14px 0 22px}
