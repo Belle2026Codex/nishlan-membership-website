@@ -134,3 +134,22 @@ header nav>a{font-size:13px;font-weight:600;padding:10px 11px}
 .history-table td small{display:block;color:#758275;font-size:12px;margin-top:4px;overflow-wrap:anywhere}.history-table tbody tr:last-child td{border-bottom:0}
 .history-table tbody tr:hover{background:#fbf8f0}
 @media(max-width:720px){.admin-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.admin-data{grid-template-columns:1fr}.admin-request-head{align-items:flex-start;flex-direction:column}.portal-section-heading h2{font-size:27px}}
+
+/* Cashier branch verification and scan history */
+.cashier-checkin{max-width:100%!important;margin:15px 0 23px;padding:clamp(22px,3vw,32px)!important}
+.cashier-checkin label{font-size:14px;color:#194b31}
+.required-mark{color:#b3593d}
+.cashier-camera{background:#edf1e9;border:1px solid #d7e4d4;border-radius:15px;padding:15px;min-height:125px;overflow:hidden;margin:22px 0}
+.cashier-camera video{border-radius:10px}
+.cashier-result{padding:22px;margin:20px 0 0;border-radius:14px;white-space:normal!important}
+.cashier-result.is-valid{border:1px solid #aed6b7;background:#e9f6eb}
+.cashier-result.is-invalid{border:1px solid #e6c9ae;background:#fff1e2}
+.cashier-result-badge{display:inline-flex;font-size:12px;padding:7px 13px;background:#17633e;color:#fff;border-radius:99px;font-weight:850;letter-spacing:.05em}
+.cashier-result.is-invalid .cashier-result-badge{background:#8c4939}
+.cashier-result h3{font:normal 27px Georgia,serif;color:#17452e;margin:15px 0}
+.cashier-result-meta{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:17px}
+.cashier-result-meta span{display:flex;flex-direction:column;font-size:14px;overflow-wrap:anywhere}
+.cashier-result-meta b{font-size:11px;text-transform:uppercase;color:#69796b;letter-spacing:.05em;margin-bottom:5px}
+.cashier-history-actions{display:flex;justify-content:flex-end;margin:0 0 15px}
+.cashier-history-actions button{margin:0}
+@media(max-width:600px){.cashier-result-meta{grid-template-columns:1fr}.cashier-history-actions{justify-content:stretch}.cashier-history-actions button{width:100%}}
