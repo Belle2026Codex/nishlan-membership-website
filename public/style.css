@@ -153,3 +153,12 @@ header nav>a{font-size:13px;font-weight:600;padding:10px 11px}
 .cashier-history-actions{display:flex;justify-content:flex-end;margin:0 0 15px}
 .cashier-history-actions button{margin:0}
 @media(max-width:600px){.cashier-result-meta{grid-template-columns:1fr}.cashier-history-actions{justify-content:stretch}.cashier-history-actions button{width:100%}}
+
+/* Approved-member QR recovery module */
+.qr-preview-card{max-width:520px!important;background:#fffaf1!important;border-top:4px solid #b88a47!important;margin:22px 0!important}
+.qr-preview-card h3{font:normal 27px Georgia,serif;color:#17442f}
+.qr-preview-card p{color:#56695d;line-height:1.7}
+#qr-preview-code{display:flex;align-items:center;justify-content:center;min-height:250px;margin:17px auto;padding:14px;background:#fff;border:1px solid #e9dcc7;border-radius:12px;width:max-content;max-width:100%}
+#qr-preview-code img,#qr-preview-code canvas{max-width:100%;height:auto}
+.qr-preview-card button{margin:10px 8px 0 0}
+.history-table .resend-email{display:block;white-space:nowrap;width:auto!important;font-size:12px!important;padding:9px 11px!important;margin-top:9px!important}
