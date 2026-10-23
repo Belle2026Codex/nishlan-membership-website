@@ -34,3 +34,44 @@ header nav a{transition:background .2s,color .2s}
 #registration-status.success{color:#17613e}
 #registration-status.error{color:#a23e31}
 @media(max-width:600px){.brand img{width:62px;height:62px}.hero{padding:32px 25px}.registration-card{padding:22px}}
+
+/* Nishlan polished public and staff experience */
+header{padding:15px max(24px,calc((100vw - 1260px)/2));gap:24px}
+header .brand{flex-shrink:0}
+header .brand img{width:82px;height:82px;object-fit:contain}
+header nav{gap:5px}
+header nav>a{font-size:13px;font-weight:600;padding:10px 11px}
+.staff-menu{position:relative;align-self:center}
+.staff-trigger{display:flex;gap:9px;align-items:center;justify-content:center;padding:11px 17px;background:#17452f;color:#fff!important;border-radius:12px;text-decoration:none;font-size:13px;font-weight:750;box-shadow:0 7px 19px #17452f22}
+.staff-submenu{display:none;position:absolute;top:100%;right:0;min-width:205px;padding:9px;background:#fffdf8;border:1px solid #e5d9c8;border-radius:13px;box-shadow:0 18px 35px #30261b24;z-index:20}
+.staff-submenu a{display:block;padding:12px 13px;color:#214a34;text-decoration:none;border-radius:8px;white-space:nowrap;font-size:13px}
+.staff-submenu a:hover{background:#edf4e8}
+.staff-menu:hover .staff-submenu,.staff-menu:focus-within .staff-submenu{display:block}
+.hero{min-height:510px;display:flex;flex-direction:column;justify-content:center;padding:56px 60px;isolation:isolate}
+.hero>*:not(.chocolate-display){position:relative;z-index:2}
+.hero-seal{margin-bottom:18px;width:85px;height:85px;background:#fff;border-radius:50%;box-shadow:0 8px 23px #31241721;border:3px solid #ddc395;overflow:hidden}
+.hero-seal img{width:100%;height:100%;object-fit:contain}
+.hero h1{font-size:clamp(46px,6vw,78px);max-width:610px}
+.hero h2{margin-top:-4px}
+.hero p{max-width:490px;line-height:1.75}
+.chocolate-display{position:absolute!important;right:2.5%;top:14%;width:320px;height:360px;transform:rotate(-10deg);opacity:1}
+.choc-piece{position:absolute;left:45px;top:85px;width:220px;height:220px;padding:12px;border-width:9px;gap:6px;border-radius:20px;box-shadow:20px 25px 40px #321b0c4d,inset 0 0 10px #24110c}
+.choc-piece i{border-radius:8px;box-shadow:inset 4px 5px 7px #d8996b,inset -4px -6px 9px #2a110b}
+.choc-leaf{font-size:70px;right:30px;top:8px;color:#79984c;text-shadow:0 4px 7px #4d693b44}
+.choc-bite{position:absolute;width:78px;height:78px;top:46px;left:4px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#bb8454,#6e3c23 62%,#3f1f12);box-shadow:8px 13px 22px #41251555}
+.choc-chip{position:absolute;width:30px;height:28px;background:linear-gradient(135deg,#ac7754,#562a17);border:3px solid #6b3a23;border-radius:8px;box-shadow:6px 7px 11px #37221344}
+.chip-one{right:2px;top:145px;transform:rotate(24deg)}
+.chip-two{left:8px;bottom:13px;transform:rotate(45deg)}
+.choc-caption{position:absolute;bottom:-4px;right:6px;font-weight:900;font-size:9px;letter-spacing:.23em;color:#70502e;transform:rotate(10deg)}
+.portal-page{max-width:960px;margin:48px auto 90px}
+.portal-kicker{font-size:11px;letter-spacing:.19em;font-weight:850;color:#99703b;margin-bottom:13px}
+.portal-page h1{font:normal 46px/1.15 Georgia,serif;color:#16442f;margin-bottom:20px}
+.portal-page .card{border-top:3px solid #b88a47}
+.portal-quicklinks{padding:14px 18px;margin:20px 0;background:#e9f0e5;border-radius:12px;font-weight:750}
+.portal-quicklinks a{text-decoration:none}
+#adminlist .card{margin:16px 0;padding:23px}
+#adminlist .card button{width:auto;margin:8px 8px 0 0;padding:11px 16px}
+#adminlist .card button[data-a="rejected"]{background:#8c4940}
+#camera{background:#ebf0e9;min-height:120px}
+@media(max-width:980px){header{padding:15px 24px}.hero{padding:48px 36px}.chocolate-display{right:-30px;opacity:.5;transform:rotate(-10deg) scale(.82)}}
+@media(max-width:700px){header nav{gap:0}header nav>a{font-size:12px;padding:7px 8px}.staff-menu{width:100%;margin-top:7px}.staff-trigger{width:100%}.staff-submenu{position:static;width:100%;box-shadow:none;margin-top:4px}.hero{padding:42px 27px;min-height:430px}.chocolate-display{right:-85px;top:25%;opacity:.17;transform:rotate(-10deg) scale(.8)}.hero-seal{width:68px;height:68px}.portal-page h1{font-size:36px}}
