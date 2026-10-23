@@ -177,3 +177,12 @@ header nav>a{font-size:13px;font-weight:600;padding:10px 11px}
 .qr-upload>label{font-size:14px;font-weight:800;color:#1d4b33;display:block;margin-bottom:10px}
 .qr-upload input[type=file]{max-width:100%;width:100%;background:white;border:1px solid #e0d3be;padding:11px;border-radius:9px;font-size:13px}
 .qr-upload p{font-size:12px;line-height:1.7;color:#63705f;margin:10px 0 0}
+
+/* Camera-first cashier verification */
+.cashier-camera{position:relative;background:#15251b;min-height:260px;border-radius:15px;overflow:hidden;margin:15px 0}
+.cashier-camera video{width:100%!important;max-height:440px;object-fit:cover;border-radius:12px}
+.cashier-camera #qr-shaded-region{border-color:#efd2a0!important}
+.qr-upload{margin-top:22px;opacity:.94}
+.qr-upload summary{font-weight:750;font-size:13px;color:#596e5b;cursor:pointer;list-style:revert;padding:3px}
+.qr-upload:not([open])>*:not(summary){display:none}
+#start-camera{display:block;margin:10px 0 16px}
