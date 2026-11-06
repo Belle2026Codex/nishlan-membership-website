@@ -186,3 +186,55 @@ header nav>a{font-size:13px;font-weight:600;padding:10px 11px}
 .qr-upload summary{font-weight:750;font-size:13px;color:#596e5b;cursor:pointer;list-style:revert;padding:3px}
 .qr-upload:not([open])>*:not(summary){display:none}
 #start-camera{display:block;margin:10px 0 16px}
+
+/* Nishlan admin visual refresh, scoped to admin to preserve cashier styles */
+body.admin-dashboard{background:linear-gradient(145deg,#f5eddf 0%,#fdfaf5 42%,#f5f7f2 100%)}
+.admin-dashboard .portal-page{width:min(calc(100% - 56px),1320px);max-width:1320px;margin:38px auto 90px}
+.admin-topbar{display:flex;justify-content:space-between;gap:28px;align-items:flex-start;padding:30px 34px 34px;margin:0 0 22px;border-radius:22px;background:linear-gradient(112deg,#12432e,#236542);color:#fff;box-shadow:0 19px 40px #153b2730}
+.admin-dashboard .admin-topbar h1{color:#fff;margin:10px 0;font-size:clamp(32px,3.3vw,49px)}
+.admin-dashboard .admin-topbar .portal-kicker{color:#e6c58b;font-size:12px}
+.admin-top-subtitle{color:#e3eee3;font-size:15px;line-height:1.65;margin:8px 0 0}
+.admin-top-pill{white-space:nowrap;font-size:10px;letter-spacing:.13em;font-weight:850;color:#f9e8c9;border:1px solid #b6bc8b70;border-radius:100px;padding:10px 15px;background:#ffffff10}
+.admin-accountbar{display:flex;align-items:center;justify-content:space-between;gap:22px;padding:19px 24px;background:#fff;border:1px solid #e8ddcc;border-radius:16px;box-shadow:0 8px 22px #1d49310a}
+.admin-account-info,.admin-account-actions{display:flex;align-items:center;gap:16px}
+.admin-account-icon{display:grid;place-items:center;width:44px;height:44px;flex-shrink:0;border-radius:13px;background:#e8f3e8;color:#22653e;font-weight:900}
+.admin-account-label{display:block;font-size:11px;color:#718175;font-weight:760;letter-spacing:.055em;text-transform:uppercase}
+.admin-account-info #who{margin:5px 0 0;font-size:15px;overflow-wrap:anywhere}
+.admin-account-actions .admin-signout{margin:0;background:#f0f1e9;color:#215237;border:1px solid #dce6d8}
+.admin-scanner-link{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;background:#195b39;color:#fff;border-radius:10px;padding:12px 18px;font-size:13px;font-weight:760;white-space:nowrap}
+.admin-scanner-link:hover{color:#fff;background:#0b4327}
+.admin-dashboard .admin-overview{margin-top:38px}
+.admin-dashboard .portal-section-heading{margin:0 0 20px}
+.admin-dashboard .portal-section-heading h2{font-size:clamp(25px,2.35vw,34px);margin:7px 0 9px}
+.admin-dashboard .portal-section-heading p{font-size:14px;line-height:1.75;max-width:720px}
+.admin-dashboard .admin-stats{gap:18px;margin:18px 0 32px}
+.admin-dashboard .admin-stat{padding:26px 25px;min-height:145px;background:#fff;border:1px solid #e7dfd0;border-radius:17px;box-shadow:0 11px 32px #2d48210b}
+.admin-dashboard .admin-stat strong{font-size:46px;line-height:1.15;color:#134b31}
+.admin-dashboard .admin-stat span{font-size:13px}
+.admin-panel{margin:30px 0;padding:30px 32px;border:1px solid #e9dfcf;border-radius:20px;background:#fffefa;box-shadow:0 9px 35px #543a160d}
+.admin-dashboard .admin-panel .history-heading{padding-top:0;border:0;margin-top:0}
+.admin-dashboard .admin-empty{padding:24px;background:#f9f8f3}
+.admin-dashboard .history-table-wrap{border-radius:13px;box-shadow:none}
+.admin-dashboard .history-table{min-width:840px}
+.admin-dashboard .history-table th{padding:18px;font-size:11px;letter-spacing:.065em}
+.admin-dashboard .history-table td{padding:20px 18px;font-size:13px}
+.admin-dashboard #adminlist .admin-request{margin:16px 0;padding:25px;border:1px solid #e8e0d1;border-radius:15px;box-shadow:none}
+.admin-dashboard #adminlist .admin-request-head strong{font-size:24px}
+.admin-dashboard .admin-actions button{margin:0!important}
+.admin-dashboard .qr-preview-card{max-width:100%!important}
+.admin-dashboard .admin-section-heading{display:flex;justify-content:space-between;align-items:center}
+@media(max-width:800px){.admin-dashboard .portal-page{width:min(calc(100% - 30px),1320px);margin:20px auto 60px}.admin-topbar{padding:26px}.admin-top-pill{display:none}.admin-accountbar,.admin-account-actions{flex-wrap:wrap}.admin-dashboard .admin-stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.admin-panel{padding:22px 17px}.admin-dashboard .admin-stat{min-height:120px;padding:19px}}
+@media(max-width:490px){.admin-account-actions{width:100%;align-items:stretch;flex-direction:column}.admin-account-actions .admin-scanner-link,.admin-account-actions .admin-signout{width:100%}.admin-dashboard .admin-stat strong{font-size:36px}}
+/* Separate QR registry and no-email enrollment */
+.admin-inline-form{display:grid;grid-template-columns:1.35fr 1fr 1fr auto;gap:14px;align-items:end}
+.admin-inline-form label{margin:0;font-size:13px}
+.admin-inline-form input,.admin-inline-form select{margin-top:9px;min-width:0}
+.admin-inline-form button{margin:0;white-space:nowrap;width:auto}
+.admin-form-note{font-size:12px;color:#657363;line-height:1.6;margin:15px 0 0}
+.masterlist-toolbar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:19px}
+.masterlist-toolbar input{margin:0;flex:1;min-width:200px;max-width:460px}
+.masterlist-toolbar button{margin:0;width:auto}
+.masterlist-table .small{width:auto;margin:4px 6px 2px 0;padding:8px 12px;font-size:12px}
+.card-preview-image{width:100%;max-width:880px;display:block;border-radius:16px;border:1px solid #d9c79b;margin:18px auto}
+@media(max-width:900px){.admin-inline-form{grid-template-columns:1fr 1fr}.admin-inline-form button{width:100%}}
+@media(max-width:540px){.admin-inline-form{grid-template-columns:1fr}}
