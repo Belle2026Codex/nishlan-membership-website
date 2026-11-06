@@ -175,7 +175,7 @@ window.downloadMemberQr=downloadMemberQr;
 let lastScannedToken='',lastScannedAt=0,scanInProgress=false,cashierScanner=null;
 function cashierDate(value){if(!value)return '—';const date=new Date(value);return Number.isNaN(date.getTime())?'—':new Intl.DateTimeFormat('en-PH',{dateStyle:'medium',timeStyle:'short',timeZone:'Asia/Manila'}).format(date)}
 function scanMessage(text,isError=false){const line=el('scan-status');if(line){line.textContent=text;line.className='scan-status'+(isError?' error':'')};if(isError)say(text)}
-function resumeCashierScanner(){const result=el('result');if(result)result.hidden=true;const button=el('scan-again');if(button)button.hidden=true;lastScannedToken='';lastScannedAt=0;try{if(cashierScanner?.getState()===3)cashierScanner.resume();else if(cashierScanner?.getState()!==2)startCashierCamera()}catch(_){startCashierCamera()}scanMessage('Scanner is ready. Point your camera at the next membership QR code.')}
+function resumeCashierScanner(){if(scanInProgress)return;const result=el('result');if(result)result.hidden=true;const button=el('scan-again');if(button)button.hidden=true;lastScannedToken='';lastScannedAt=0;try{if(cashierScanner?.getState()===3)cashierScanner.resume();else if(cashierScanner?.getState()!==2)void startCashierCamera()}catch(_){void startCashierCamera()}scanMessage('Scanner is ready. Point your camera at the next membership QR code.')}
 async function verifyQrImage(file){
  if(!file)return;
  if(!el('branch')?.value.trim()){scanMessage('Select your branch first, then upload the QR image.',true);el('branch')?.focus();return}
@@ -194,6 +194,7 @@ async function verifyToken(token){
  const branch=el('branch')?.value.trim()||'';
  if(branch.length<2||branch.length>100){scanMessage('Please enter or select your branch before scanning.',true);el('branch')?.focus();return}
  const code=String(token||'').trim();if(!code){scanMessage('Please scan the QR card or enter its token.',true);return}
+ if(code.length>2048){scanMessage('This QR code is too long to be a Nishlan membership token.',true);return}
  if(scanInProgress||code===lastScannedToken&&Date.now()-lastScannedAt<12000)return;
  scanInProgress=true;lastScannedToken=code;lastScannedAt=Date.now();say('');scanMessage('QR detected. Checking membership…');
  const button=el('verify-button');if(button)button.disabled=true;
@@ -231,11 +232,11 @@ async function startCashierCamera(){
  if(!window.Html5Qrcode){scanMessage('Camera scanner library has not loaded. Check your connection and reload.',true);return}
  cashierCameraStarting=true;const trigger=el('start-camera');if(trigger)trigger.disabled=true;
  try{
-  if(cashierScanner){try{if(cashierScanner.getState()===2)await cashierScanner.stop()}catch(_){}try{await cashierScanner.clear()}catch(_){}}
+  if(cashierScanner){try{if([2,3].includes(cashierScanner.getState()))await cashierScanner.stop()}catch(_){}try{await cashierScanner.clear()}catch(_){}}
   camera.innerHTML='';
   cashierScanner=new Html5Qrcode('camera',{verbose:false});
-  const onDecoded=decoded=>{scanMessage('QR recognized! Verifying membership…');void verifyToken(decoded)};
-  const config={fps:12,qrbox:(w,h)=>({width:Math.min(250,Math.round(w*.73)),height:Math.min(250,Math.round(h*.73))}),aspectRatio:1.3333333};
+  const onDecoded=decoded=>{if(scanInProgress||el('result')?.hidden===false)return;void verifyToken(decoded)};
+  const config={fps:12,qrbox:(w,h)=>({width:Math.max(120,Math.min(300,Math.round(w*.8))),height:Math.max(120,Math.min(300,Math.round(h*.8)))})};
   try{
    await cashierScanner.start({facingMode:'environment'},config,onDecoded,()=>{});
   }catch(primary){
