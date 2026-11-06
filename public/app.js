@@ -6,7 +6,7 @@ async function loadCardTemplateStatus(){
  try{
   const {data,error}=await db.functions.invoke('membership-template-assets',{body:{action:'status'}});
   if(error)throw error;
-  target.textContent=data?.ready?'Official front and back templates installed. All cards will use these designs.':data?.front||data?.back?'Only one template is saved. Please upload the remaining side.':'Official images are not installed yet. Upload both PNG templates below.';
+  target.textContent=data?.builtIn?'Your original Nishlan front and back templates are already installed. Every member card automatically uses these designs. Uploading PNG images below is optional if you want to replace the installed artwork with higher-resolution originals.':data?.ready?'Official front and back templates are installed. All membership cards use your chosen designs.':'Card artwork could not be confirmed. Please refresh.';
   target.className='template-status '+(data?.ready?'ready':'pending');
  }catch(e){target.textContent='Template status unavailable: '+e.message;target.className='template-status pending'}
 }
