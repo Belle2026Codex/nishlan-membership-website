@@ -1,18 +1,87 @@
 const db=window.supabase.createClient('https://lmfqffywplzardgpkzbo.supabase.co','sb_publishable_nk3234xukW8fi34J7U5xvQ_j7MEOEmM');const el=x=>document.getElementById(x),say=x=>el('notice').textContent=x,esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));async function role(){const{data:{user}}=await db.auth.getUser();if(!user)return null;const{data}=await db.from('staff_accounts').select('role,active').eq('user_id',user.id).maybeSingle();return data?.active?data.role:null}async function signIn(){const{error}=await db.auth.signInWithPassword({email:el('email').value.trim(),password:el('password').value});if(error)say(error.message);else location.reload()}async function signUp(){const{error}=await db.auth.signUp({email:el('email').value.trim(),password:el('password').value});say(error?error.message:'Account created. Check your email for a confirmation link, then sign in.')}async function signOut(){await db.auth.signOut();location.href='/'}async function submitApplication(){const{data:{user}}=await db.auth.getUser();if(!user)return say('Please sign in.');const{error}=await db.from('members').insert({owner_user_id:user.id,email:user.email,full_name:el('full_name').value.trim(),phone:el('phone').value.trim(),membership_type:el('membership_type').value,eagles_chapter:el('membership_type').value==='eagles'?el('chapter').value.trim():null});say(error?error.message:'Application submitted. Await administrator approval.');if(!error)location.reload()}async function member(){const{data:{user}}=await db.auth.getUser();const{data,error}=await db.from('members').select('full_name,member_number,application_status,payment_status,qr_token').eq('owner_user_id',user.id).maybeSingle();if(error)return say(error.message);if(!data){el('member').textContent='No application yet.';return}el('application').hidden=true;el('member').innerHTML='<h3>'+esc(data.full_name)+'</h3><p>Status: '+esc(data.application_status)+' | Payment: '+esc(data.payment_status)+'</p>'+(data.application_status==='approved'&&['paid','waived'].includes(data.payment_status)?'<p>Member number: '+esc(data.member_number)+'</p><div id="qrcode"></div><p>Save a screenshot of your QR card.</p>':'');if(el('qrcode')&&window.QRCode)new QRCode(el('qrcode'),{text:data.qr_token,width:220,height:220})}function readableDate(value){if(!value)return '—';const date=new Date(value);return Number.isNaN(date.getTime())?'—':new Intl.DateTimeFormat('en-PH',{dateStyle:'medium',timeStyle:'short',timeZone:'Asia/Manila'}).format(date)}
+
+let currentCardUrl='',nishlanMasterRecords=[];
+function membershipValidity(m){return m.membership_type==='eagles'?'Lifetime':m.expires_at?new Intl.DateTimeFormat('en-PH',{day:'numeric',month:'short',year:'numeric',timeZone:'Asia/Manila'}).format(new Date(m.expires_at)):'Not set'}
+function membershipLabel(m){return m.membership_type==='eagles'?'Eagles · Lifetime':'Regular · 1 year'}
+async function cardRequest(id,action='download'){
+ const{data:{session}}=await db.auth.getSession();if(!session)throw Error('Please sign in as administrator again.');
+ const result=await fetch('https://lmfqffywplzardgpkzbo.supabase.co/functions/v1/membership-card',{method:'POST',headers:{'Authorization':'Bearer '+session.access_token,'apikey':'sb_publishable_nk3234xukW8fi34J7U5xvQ_j7MEOEmM','Content-Type':'application/json'},body:JSON.stringify({member_id:id,action})});
+ if(!result.ok){let error='Unable to generate membership card';try{const body=await result.json();error=body.error||error}catch(_){}throw Error(error)}
+ return action==='download'?await result.blob():await result.json();
+}
+async function showMemberCard(id){
+ const m=(window.nishlanApprovedRecords||[]).find(x=>x.id===id)||nishlanMasterRecords.find(x=>x.id===id);
+ if(!m||m.application_status!=='approved')return say('Approved membership not found.');
+ const area=el('qr-preview'),target=el('qr-preview-code');area.hidden=false;area.scrollIntoView({behavior:'smooth',block:'center'});target.innerHTML='<p>Generating personalized membership card…</p>';
+ el('qr-preview-number').textContent=m.full_name+' · '+m.member_number+' · '+membershipValidity(m);
+ try{const blob=await cardRequest(id);if(currentCardUrl)URL.revokeObjectURL(currentCardUrl);currentCardUrl=URL.createObjectURL(blob);window.activeMemberCardId=id;target.innerHTML='<img class="card-preview-image" alt="Nishlan personalized membership card" src="'+currentCardUrl+'">';say('Membership card generated. The existing QR token remains unchanged.')}
+ catch(e){target.innerHTML='<p>Card could not load: '+esc(e.message)+'</p>';say(e.message)}
+}
+async function downloadMemberQr(){
+ if(!window.activeMemberCardId)return say('Choose a member in the QR Card Masterlist first.');
+ if(!currentCardUrl){try{const blob=await cardRequest(window.activeMemberCardId);currentCardUrl=URL.createObjectURL(blob)}catch(e){return say(e.message)}}
+ const a=document.createElement('a');a.href=currentCardUrl;a.download='Nishlan-Membership-Card-'+(window.activeMemberCardId||'')+'.png';document.body.appendChild(a);a.click();a.remove();
+}
+async function sendMemberCard(id){
+ const m=nishlanMasterRecords.find(x=>x.id===id)||(window.nishlanApprovedRecords||[]).find(x=>x.id===id);
+ if(!m?.email)return say('This member has no email. Download and print the membership card instead.');
+ if(!confirm('Email the complete membership card to '+m.email+'?'))return;
+ say('Sending personalized membership card…');
+ try{const result=await cardRequest(id,'email');say(result.message||'Membership card sent.')}catch(e){say(e.message)}
+}
+async function adminCreateMember(){
+ const name=el('direct-name').value.trim(),phone=el('direct-phone').value.trim(),type=el('direct-type').value;
+ if(name.length<3||phone.length<6)return say('Provide the member’s name and contact number.');
+ if(!confirm('Create and immediately activate '+(type==='eagles'?'a lifetime Eagles':'a one-year Regular')+' membership for '+name+'? Confirm eligibility and payment before continuing.'))return;
+ const button=el('direct-create-btn');button.disabled=true;say('Creating approved membership…');
+ try{const {data,error}=await db.rpc('nishlan_admin_create_member',{p_name:name,p_phone:phone,p_type:type});if(error)throw error;
+ el('direct-create-result').textContent='Membership created successfully. You can download its card from the QR Card Masterlist.';
+ el('direct-name').value='';el('direct-phone').value='';
+ await admin();await loadQrMasterlist();say('Approved membership created; no email required.');if(data)await showMemberCard(data);
+ }catch(e){say('Could not create member: '+e.message)}finally{button.disabled=false}
+}
+async function loadQrMasterlist(){
+ if(await role()!=='admin')return;
+ const all=[];for(let from=0;from<10000;from+=1000){
+  const {data,error}=await db.from('members').select('id,full_name,email,phone,membership_type,member_number,approved_at,expires_at,application_status,registration_source').eq('application_status','approved').order('approved_at',{ascending:false}).range(from,from+999);
+  if(error){el('qr-masterlist').textContent='Unable to load card registry: '+error.message;return}
+  all.push(...(data||[]));if(!data||data.length<1000)break;
+ }
+ nishlanMasterRecords=all;renderQrMasterlist();
+}
+function renderQrMasterlist(){
+ const target=el('qr-masterlist');if(!target)return;
+ const q=(el('masterlist-search')?.value||'').trim().toLowerCase();
+ const rows=nishlanMasterRecords.filter(m=>[m.full_name,m.member_number,m.phone,m.membership_type].some(x=>String(x||'').toLowerCase().includes(q)));
+ if(!rows.length){target.className='admin-empty';target.textContent=nishlanMasterRecords.length?'No memberships match your search.':'No approved memberships yet.';return}
+ target.className='history-table-wrap';
+ target.innerHTML='<table class="history-table masterlist-table"><thead><tr><th>Member / card number</th><th>Contact</th><th>Membership</th><th>Validity</th><th>Card actions</th></tr></thead><tbody>'+
+ rows.map(m=>'<tr><td><strong>'+esc(m.full_name)+'</strong><small>'+esc(m.member_number||'—')+'</small></td><td>'+esc(m.phone||'—')+'<small>'+esc(m.email||'No email · admin-issued')+'</small></td><td>'+esc(membershipLabel(m))+'<small>'+esc(m.registration_source==='admin'?'Created by admin':'Online application')+'</small></td><td>'+esc(membershipValidity(m))+'</td><td><button class="small" data-card="'+esc(m.id)+'">View / download card</button>'+(m.email?'<button class="small" data-email-card="'+esc(m.id)+'">Email card</button>':'')+'</td></tr>').join('')+'</tbody></table>';
+ target.onclick=async e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.card)await showMemberCard(b.dataset.card);else if(b.dataset.emailCard)await sendMemberCard(b.dataset.emailCard)};
+}
+function exportQrMasterlist(){
+ if(!nishlanMasterRecords.length)return say('No approved membership records to export.');
+ const csvCell=x=>'"'+String(x??'').replace(/"/g,'""')+'"';
+ const headings=['Member name','Member number','Contact','Email','Membership type','Valid until','Approved at','Registration source'];
+ const values=nishlanMasterRecords.map(m=>[m.full_name,m.member_number,m.phone,m.email||'',membershipLabel(m),membershipValidity(m),readableDate(m.approved_at),m.registration_source||'online']);
+ const csv=[headings,...values].map(row=>row.map(csvCell).join(',')).join('\r\n');
+ const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='Nishlan-QR-Card-Masterlist.csv';a.click();URL.revokeObjectURL(url);
+}
 function summaryCard(label,amount){return '<div class="admin-stat"><strong>'+amount+'</strong><span>'+label+'</span></div>'}
 async function admin(){
  if(await role()!=='admin')return say('Administrator access only.');
- const {data,error}=await db.from('members').select('id,full_name,email,phone,membership_type,member_number,application_status,payment_status,created_at,approved_at,qr_token').order('created_at',{ascending:false}).limit(500);
+ const {data,error}=await db.from('members').select('id,full_name,email,phone,membership_type,member_number,application_status,payment_status,created_at,approved_at,expires_at,registration_source,qr_token').order('created_at',{ascending:false}).limit(500);
  if(error)return say(error.message);
  const all=data||[],pending=all.filter(m=>m.application_status==='pending'),history=all.filter(m=>m.application_status!=='pending');
  el('adminstats').innerHTML=summaryCard('Total applications',all.length)+summaryCard('Pending review',pending.length)+summaryCard('Approved',history.filter(m=>m.application_status==='approved').length)+summaryCard('Rejected',history.filter(m=>m.application_status==='rejected').length);
  el('adminlist').innerHTML=pending.map(m=>'<article class="card admin-request"><div class="admin-request-head"><strong>'+esc(m.full_name)+'</strong><span class="member-status pending">Pending</span></div><div class="admin-data"><span><b>Email</b>'+esc(m.email)+'</span><span><b>Mobile</b>'+esc(m.phone||'—')+'</span><span><b>Category</b>'+esc(m.membership_type)+'</span><span><b>Submitted</b>'+esc(readableDate(m.created_at))+'</span><span><b>Payment</b>'+esc(m.payment_status)+'</span></div><div class="admin-actions"><button data-id="'+esc(m.id)+'" data-a="approved">Confirm payment and approve</button><button data-id="'+esc(m.id)+'" data-a="rejected">Reject</button></div></article>').join('')||'<div class="admin-empty">No applications are awaiting review.</div>';
  window.nishlanApprovedRecords=history;
  const historyList=el('approval-history');
- if(historyList)historyList.innerHTML=history.length?'<div class="history-table-wrap"><table class="history-table"><thead><tr><th>Customer</th><th>Membership</th><th>Submitted</th><th>Approved / reviewed</th><th>Status</th></tr></thead><tbody>'+history.map(m=>'<tr><td><strong>'+esc(m.full_name)+'</strong><small>'+esc(m.email)+'</small><small>'+esc(m.phone||'No phone')+'</small></td><td>'+esc(m.membership_type)+'<small>'+esc(m.member_number||'No number')+'</small></td><td>'+esc(readableDate(m.created_at))+'</td><td>'+esc(m.application_status==='approved'?readableDate(m.approved_at):'Not recorded')+'</td><td><span class="member-status '+(m.application_status==='approved'?'approved':'rejected')+'">'+esc(m.application_status)+'</span><small>Payment: '+esc(m.payment_status)+'</small>'+(m.application_status==='approved'?'<button class="resend-email small" data-resend-id="'+esc(m.id)+'">Send QR email again</button><button class="resend-email small" data-qr-id="'+esc(m.id)+'">View / download QR</button>':'')+'</td></tr>').join('')+'</tbody></table></div>':'<div class="admin-empty">No reviewed applications yet. Approved and rejected members will appear here.</div>';
-window.showMemberQr=function(id){const m=(window.nishlanApprovedRecords||[]).find(x=>x.id===id);if(!m||m.application_status!=='approved'||!m.qr_token)return say('No QR code available for this member.');const area=el('qr-preview');const target=el('qr-preview-code');area.hidden=false;target.textContent='';if(!window.QRCode)return say('QR image library could not load. Refresh and try again.');new QRCode(target,{text:m.qr_token,width:230,height:230});el('qr-preview-number').textContent=m.full_name+' — '+(m.member_number||'');area.scrollIntoView({behavior:'smooth',block:'center'})};
-window.downloadMemberQr=function(){const canvas=el('qr-preview-code')?.querySelector('canvas');const img=el('qr-preview-code')?.querySelector('img');const url=canvas?.toDataURL('image/png')||img?.src;if(!url)return say('QR image is not yet ready.');const a=document.createElement('a');a.href=url;a.download='Nishlan-Membership-QR.png';a.click()};
- if(historyList)historyList.onclick=async e=>{const show=e.target.closest('button[data-qr-id]');if(show){window.showMemberQr(show.dataset.qrId);return}const b=e.target.closest('button[data-resend-id]');if(!b)return;if(!confirm('Send the existing QR membership email to this customer again?'))return;b.disabled=true;say('Sending QR email…');try{const {data,error}=await db.functions.invoke('membership-email-retry',{body:{member_id:b.dataset.resendId}});let msg=data?.error||error?.message;if(error?.context){try{const detail=await error.context.json();msg=detail.error||msg}catch(_){}}say(msg||'QR email dispatched. Check the recipient inbox or spam folder.')}catch(error){say(error.message||'QR email could not be sent')}finally{b.disabled=false}};
+ if(historyList)historyList.innerHTML=history.length?'<div class="history-table-wrap"><table class="history-table"><thead><tr><th>Customer</th><th>Membership</th><th>Submitted</th><th>Approved / reviewed</th><th>Status</th></tr></thead><tbody>'+history.map(m=>'<tr><td><strong>'+esc(m.full_name)+'</strong><small>'+esc(m.email)+'</small><small>'+esc(m.phone||'No phone')+'</small></td><td>'+esc(m.membership_type)+'<small>'+esc(m.member_number||'No number')+'</small></td><td>'+esc(readableDate(m.created_at))+'</td><td>'+esc(m.application_status==='approved'?readableDate(m.approved_at):'Not recorded')+'</td><td><span class="member-status '+(m.application_status==='approved'?'approved':'rejected')+'">'+esc(m.application_status)+'</span><small>Payment: '+esc(m.payment_status)+'</small>'+(m.application_status==='approved'?'<button class="resend-email small" data-resend-id="'+esc(m.id)+'">Send membership card again</button><button class="resend-email small" data-qr-id="'+esc(m.id)+'">View / download card</button>':'')+'</td></tr>').join('')+'</tbody></table></div>':'<div class="admin-empty">No reviewed applications yet. Approved and rejected members will appear here.</div>';
+window.showMemberQr=showMemberCard;
+window.downloadMemberQr=downloadMemberQr;
+ if(historyList)historyList.onclick=async e=>{const show=e.target.closest('button[data-qr-id]');if(show){await showMemberCard(show.dataset.qrId);return}const email=e.target.closest('button[data-resend-id]');if(email)await sendMemberCard(email.dataset.resendId)};
+ await loadQrMasterlist();
  el('adminlist').onclick=async e=>{
  const b=e.target.closest('button[data-id]');if(!b)return;
  const approved=b.dataset.a==='approved';
