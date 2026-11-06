@@ -329,3 +329,18 @@ body.admin-dashboard{background:linear-gradient(145deg,#f5eddf 0%,#fdfaf5 42%,#f
  .admin-account-actions .admin-signout{width:100%}
  .admin-dashboard .admin-stat strong{font-size:32px}
 }
+
+/* Approved original front/back artwork setup */
+.template-setup-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;align-items:end;margin:15px 0}
+.template-setup-grid label{font-weight:750;min-width:0}
+.template-setup-grid input[type=file]{font-size:14px;line-height:1.4;padding:14px;width:100%;background:#fff}
+.template-status{padding:14px 17px;background:#faf4e5;border:1px solid #e6d5a9;color:#795b27;border-radius:12px;font-size:13px;font-weight:700;line-height:1.65}
+.template-status.ready{background:#e7f5e9;border-color:#b9dac1;color:#135f37}
+.template-status.pending{background:#faf4e5}
+#card-templates-section #save-card-templates{width:auto;min-height:46px;padding-inline:20px;margin-top:10px}
+#card-templates-section .admin-form-note{margin-top:12px}
+@media(max-width:700px){
+ .template-setup-grid{grid-template-columns:1fr;gap:9px}
+ #card-templates-section #save-card-templates{width:100%;min-height:48px}
+ #qr-preview .qr-preview-card button{width:100%}
+}
