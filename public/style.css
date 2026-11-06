@@ -344,3 +344,96 @@ body.admin-dashboard{background:linear-gradient(145deg,#f5eddf 0%,#fdfaf5 42%,#f
  #card-templates-section #save-card-templates{width:100%;min-height:48px}
  #qr-preview .qr-preview-card button{width:100%}
 }
+
+
+/* 2026-11-06 — Responsive public portal refresh. Scoped so staff workflows stay intact. */
+body.home-page{background:radial-gradient(ellipse at 8% 12%,#f4e8d1 0%,transparent 38%),linear-gradient(160deg,#fffdfa,#f8f4ec 64%,#f2f7f0);color:#173f2d}
+.home-page header{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:12px max(24px,calc((100vw - 1320px)/2));background:#fffdf9f5;backdrop-filter:blur(14px);border-bottom:1px solid #e9decd;box-shadow:0 4px 22px #3f2d1710}
+.home-page .brand{flex-shrink:0}.home-page .brand img{width:58px;height:58px}
+.home-page header nav{display:flex;justify-content:flex-end;align-items:center;gap:3px;flex-wrap:wrap}
+.home-page header nav>a,.home-page .staff-trigger{font-size:13px;padding:12px 11px;min-height:44px;display:inline-flex;align-items:center}
+.home-page header nav>a:hover,.home-page .staff-trigger:hover{background:#f0f4e9}
+.home-page .mobile-nav-toggle{display:none}
+.home-page main{width:min(calc(100% - 56px),1240px);max-width:1240px;margin:35px auto 85px}
+.home-page .hero{isolation:isolate;display:flex;flex-direction:column;justify-content:center;min-height:610px;padding:clamp(44px,6vw,80px);padding-right:43%;border-radius:30px;margin-bottom:26px;background:radial-gradient(circle at 76% 43%,#f4dfbb 0%,transparent 43%),linear-gradient(115deg,#fffdf8,#f4e9d8);border:1px solid #ebdcc5;box-shadow:0 22px 65px #593d1a14}
+.home-page .hero-seal{position:relative;z-index:2;margin-bottom:19px}.home-page .hero-seal img{width:76px;height:76px;object-fit:contain}
+.home-page .hero .eyebrow{position:relative;z-index:2;font-size:11px;letter-spacing:.19em;margin-bottom:15px;color:#668047}
+.home-page .hero h1{position:relative;z-index:2;font-size:clamp(47px,5.3vw,76px);line-height:1.04;letter-spacing:-.045em;max-width:none;margin-bottom:12px}
+.home-page .hero h1 span{letter-spacing:.015em}
+.home-page .hero h2{position:relative;z-index:2;font-size:clamp(23px,2.5vw,34px);line-height:1.22;color:#78502d;margin:0 0 24px}
+.home-page .hero p{position:relative;z-index:2;font-size:clamp(15px,1.5vw,18px);line-height:1.8;max-width:570px;margin:12px 0;color:#4c6558}
+.home-page .hero-actions{position:relative;z-index:2;display:flex;gap:12px;align-items:center;margin-top:24px}
+.home-page .hero .action{min-height:52px;display:inline-flex;align-items:center;justify-content:center;padding:14px 23px;border-radius:12px;box-shadow:0 6px 16px #133d2917;transition:transform .2s,background .2s}
+.home-page .hero .action:hover{transform:translateY(-2px)}
+.home-page .chocolate-display{right:9%;top:30%;transform:rotate(-11deg) scale(1.65);transform-origin:center;z-index:1}
+.home-page .choc-caption{white-space:nowrap}
+.home-page .benefit-strip{gap:14px;margin-bottom:55px}
+.home-page .benefit-strip>div{padding:20px 22px;border-radius:17px;box-shadow:0 8px 22px #3a2a1710}
+.home-page .info-section{scroll-margin-top:112px;padding:38px 0 44px}
+.home-page .info-section>p{max-width:850px}
+.home-page .feature,.home-page .branch-card,.home-page .why-card{transition:transform .2s,box-shadow .2s}
+.home-page .feature:hover,.home-page .branch-card:hover,.home-page .why-card:hover{transform:translateY(-3px);box-shadow:0 14px 35px #4b361518}
+.home-page #join{padding:clamp(22px,3vw,40px);margin:36px 0}
+.home-page #join .card{max-width:760px}
+.home-page input,.home-page select{min-height:48px}
+.home-page :is(a,button,input,select,summary):focus-visible{outline:3px solid #b48a40;outline-offset:3px}
+@media(max-width:1050px){
+ .home-page header{padding:12px 22px}
+ .home-page main{width:calc(100% - 36px)}
+ .home-page .hero{min-height:555px;padding:48px 42% 48px 48px}
+ .home-page .hero h1{font-size:clamp(43px,6vw,63px)}
+ .home-page .chocolate-display{right:5%;transform:rotate(-11deg) scale(1.35)}
+}
+@media(max-width:800px){
+ .home-page header{flex-direction:row;align-items:center;flex-wrap:wrap;padding:10px 18px;gap:8px}
+ .home-page .brand img{width:50px;height:50px}
+ .home-page .brand b{font-size:19px}
+ .home-page .mobile-nav-toggle{display:inline-flex;width:auto;min-height:44px;min-width:44px;margin:0 0 0 auto;padding:10px 14px;gap:8px;align-items:center;border:1px solid #d8e1d1;border-radius:12px;background:#eff4eb;color:#174831;font-size:14px}
+ .home-page .mobile-nav-toggle .menu-bars{font-size:20px;line-height:1}
+ .home-page header nav{display:none;flex-basis:100%;width:100%;padding:10px 0 6px;flex-direction:column;align-items:stretch;gap:3px}
+ .home-page header nav.is-open{display:flex}
+ .home-page header nav>a,.home-page .staff-trigger{width:100%;min-height:46px;justify-content:flex-start;padding:12px 15px;font-size:15px}
+ .home-page .staff-menu{width:100%}
+ .home-page .staff-submenu{position:static!important;display:block!important;box-shadow:none!important;border:0!important;padding:0 0 0 14px!important;background:transparent!important}
+ .home-page .staff-submenu a{display:block;min-height:43px;padding:11px 15px}
+ .home-page main{margin:20px auto 50px}
+ .home-page .hero{min-height:0;padding:45px 38px 290px;display:block;border-radius:23px}
+ .home-page .hero h1{font-size:clamp(44px,8vw,66px)}
+ .home-page .hero h2{font-size:clamp(22px,4.2vw,31px)}
+ .home-page .hero p{max-width:560px}
+ .home-page .chocolate-display{top:auto;bottom:35px;right:calc(50% - 95px);transform:rotate(-11deg) scale(1.06);opacity:.9}
+ .home-page .benefit-strip{grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+ .home-page .benefit-strip>div{padding:16px 12px}
+ .home-page .benefit-strip strong{margin-left:4px;font-size:13px}
+ .home-page .benefit-strip small{margin-left:0}
+}
+@media(max-width:600px){
+ .home-page main{width:calc(100% - 24px);margin-top:13px}
+ .home-page .hero{padding:31px 24px 240px;border-radius:19px;margin-bottom:16px}
+ .home-page .hero-seal img{width:63px;height:63px}
+ .home-page .hero .eyebrow{font-size:9px;letter-spacing:.14em;line-height:1.6}
+ .home-page .hero h1{font-size:clamp(40px,10.7vw,58px);overflow-wrap:normal}
+ .home-page .hero h2{font-size:clamp(20px,5vw,27px);margin:0 0 14px}
+ .home-page .hero p{font-size:15px;line-height:1.7;margin:10px 0}
+ .home-page .hero-actions{display:grid;grid-template-columns:1fr;gap:10px;margin-top:21px}
+ .home-page .hero .action{width:100%;min-height:51px;padding:13px}
+ .home-page .chocolate-display{right:calc(50% - 92px);bottom:24px;transform:rotate(-11deg) scale(.88)}
+ .home-page .benefit-strip{grid-template-columns:1fr;margin-bottom:24px}
+ .home-page .benefit-strip>div{display:flex;align-items:center;flex-wrap:wrap;gap:6px 8px;padding:13px 17px;font-size:20px}
+ .home-page .benefit-strip strong{margin:0;font-size:14px}
+ .home-page .benefit-strip small{width:100%;margin:0 0 0 25px;font-size:12px}
+ .home-page .info-section{padding:27px 0 31px;scroll-margin-top:90px}
+ .home-page .info-section h2{font-size:clamp(25px,7vw,32px)}
+ .home-page .features,.home-page .features.two,.home-page .branch-cards,.home-page .membership-details,.home-page .journey{grid-template-columns:1fr}
+ .home-page .feature,.home-page .branch-card{padding:19px}
+ .home-page #join{padding:20px 14px;border-radius:15px}
+ .home-page #join .card{padding:20px 16px}
+ .home-page .form-grid{grid-template-columns:1fr}
+ .home-page .membership-feature{margin:20px 0}
+ .home-page .membership-top,.home-page .why-membership,.home-page .membership-how{padding:25px 20px}
+ .home-page .member-type{padding:21px}
+ .home-page .journey-step{padding:16px}
+ .home-page #contact{overflow-wrap:anywhere}
+ .home-page footer{line-height:1.8}
+}
+@media(prefers-reduced-motion:reduce){.home-page *{scroll-behavior:auto!important;transition:none!important}}
