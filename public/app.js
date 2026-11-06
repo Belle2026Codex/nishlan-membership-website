@@ -1,5 +1,48 @@
 const db=window.supabase.createClient('https://lmfqffywplzardgpkzbo.supabase.co','sb_publishable_nk3234xukW8fi34J7U5xvQ_j7MEOEmM');const el=x=>document.getElementById(x),say=x=>el('notice').textContent=x,esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));async function role(){const{data:{user}}=await db.auth.getUser();if(!user)return null;const{data}=await db.from('staff_accounts').select('role,active').eq('user_id',user.id).maybeSingle();return data?.active?data.role:null}async function signIn(){const{error}=await db.auth.signInWithPassword({email:el('email').value.trim(),password:el('password').value});if(error)say(error.message);else location.reload()}async function signUp(){const{error}=await db.auth.signUp({email:el('email').value.trim(),password:el('password').value});say(error?error.message:'Account created. Check your email for a confirmation link, then sign in.')}async function signOut(){await db.auth.signOut();location.href='/'}async function submitApplication(){const{data:{user}}=await db.auth.getUser();if(!user)return say('Please sign in.');const{error}=await db.from('members').insert({owner_user_id:user.id,email:user.email,full_name:el('full_name').value.trim(),phone:el('phone').value.trim(),membership_type:el('membership_type').value,eagles_chapter:el('membership_type').value==='eagles'?el('chapter').value.trim():null});say(error?error.message:'Application submitted. Await administrator approval.');if(!error)location.reload()}async function member(){const{data:{user}}=await db.auth.getUser();const{data,error}=await db.from('members').select('full_name,member_number,application_status,payment_status,qr_token').eq('owner_user_id',user.id).maybeSingle();if(error)return say(error.message);if(!data){el('member').textContent='No application yet.';return}el('application').hidden=true;el('member').innerHTML='<h3>'+esc(data.full_name)+'</h3><p>Status: '+esc(data.application_status)+' | Payment: '+esc(data.payment_status)+'</p>'+(data.application_status==='approved'&&['paid','waived'].includes(data.payment_status)?'<p>Member number: '+esc(data.member_number)+'</p><div id="qrcode"></div><p>Save a screenshot of your QR card.</p>':'');if(el('qrcode')&&window.QRCode)new QRCode(el('qrcode'),{text:data.qr_token,width:220,height:220})}function readableDate(value){if(!value)return '—';const date=new Date(value);return Number.isNaN(date.getTime())?'—':new Intl.DateTimeFormat('en-PH',{dateStyle:'medium',timeStyle:'short',timeZone:'Asia/Manila'}).format(date)}
 
+
+async function loadCardTemplateStatus(){
+ const target=el('card-template-status');if(!target)return;
+ try{
+  const {data,error}=await db.functions.invoke('membership-template-assets',{body:{action:'status'}});
+  if(error)throw error;
+  target.textContent=data?.ready?'Official front and back templates installed. All cards will use these designs.':data?.front||data?.back?'Only one template is saved. Please upload the remaining side.':'Official images are not installed yet. Upload both PNG templates below.';
+  target.className='template-status '+(data?.ready?'ready':'pending');
+ }catch(e){target.textContent='Template status unavailable: '+e.message;target.className='template-status pending'}
+}
+function imageFileAsData(file){
+ return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(String(r.result));r.onerror=()=>reject(Error('Could not read image'));r.readAsDataURL(file)});
+}
+async function saveCardTemplates(){
+ const front=el('card-front-upload')?.files?.[0],back=el('card-back-upload')?.files?.[0];
+ if(!front&&!back)return say('Select your front and back PNG templates before saving.');
+ const button=el('save-card-templates');button.disabled=true;
+ try{
+  for(const [side,file] of [['front',front],['back',back]]){
+   if(!file)continue;
+   if(file.type!=='image/png')throw Error('Please upload PNG artwork for '+side+'.');
+   if(file.size>6000000)throw Error('The '+side+' image exceeds 6 MB.');
+   el('card-template-status').textContent='Uploading official '+side+' artwork…';
+   const dataUrl=await imageFileAsData(file);
+   const {data,error}=await db.functions.invoke('membership-template-assets',{body:{action:'save',side,data:dataUrl}});
+   if(error||!data?.ok)throw Error(data?.error||error?.message||'Template upload failed.');
+  }
+  say('Official Nishlan artwork saved. Existing QR codes remain unchanged.');
+  await loadCardTemplateStatus();
+ }catch(e){say(e.message);el('card-template-status').textContent='Artwork upload failed: '+e.message}
+ finally{button.disabled=false}
+}
+async function downloadCardSide(side){
+ const id=window.activeMemberCardId;
+ if(!id)return say('Please choose a member and open their card first.');
+ if(!['front','back'].includes(side))return;
+ try{
+  say('Preparing '+side+' artwork…');
+  const blob=await cardRequest(id,side),url=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=url;a.download='Nishlan-Membership-'+side+'-'+id+'.png';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),20000);say('Card '+side+' downloaded.');
+ }catch(e){say(e.message)}
+}
+
 let currentCardUrl='',nishlanMasterRecords=[];
 function membershipValidity(m){return m.membership_type==='eagles'?'Lifetime':m.expires_at?new Intl.DateTimeFormat('en-PH',{day:'numeric',month:'short',year:'numeric',timeZone:'Asia/Manila'}).format(new Date(m.expires_at)):'Not set'}
 function membershipLabel(m){return m.membership_type==='eagles'?'Eagles · Lifetime':'Regular · 1 year'}
@@ -7,7 +50,7 @@ async function cardRequest(id,action='download'){
  const{data:{session}}=await db.auth.getSession();if(!session)throw Error('Please sign in as administrator again.');
  const result=await fetch('https://lmfqffywplzardgpkzbo.supabase.co/functions/v1/membership-card',{method:'POST',headers:{'Authorization':'Bearer '+session.access_token,'apikey':'sb_publishable_nk3234xukW8fi34J7U5xvQ_j7MEOEmM','Content-Type':'application/json'},body:JSON.stringify({member_id:id,action})});
  if(!result.ok){let error='Unable to generate membership card';try{const body=await result.json();error=body.error||error}catch(_){}throw Error(error)}
- return action==='download'?await result.blob():await result.json();
+ return action==='email'?await result.json():await result.blob();
 }
 async function showMemberCard(id){
  const m=(window.nishlanApprovedRecords||[]).find(x=>x.id===id)||nishlanMasterRecords.find(x=>x.id===id);
@@ -113,6 +156,7 @@ window.showMemberQr=showMemberCard;
 window.downloadMemberQr=downloadMemberQr;
  if(historyList)historyList.onclick=async e=>{const show=e.target.closest('button[data-qr-id]');if(show){await showMemberCard(show.dataset.qrId);return}const email=e.target.closest('button[data-resend-id]');if(email)await sendMemberCard(email.dataset.resendId)};
  await loadQrMasterlist();
+ await loadCardTemplateStatus();
  el('adminlist').onclick=async e=>{
  const b=e.target.closest('button[data-id]');if(!b)return;
  const approved=b.dataset.a==='approved';
