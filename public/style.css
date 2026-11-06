@@ -238,3 +238,94 @@ body.admin-dashboard{background:linear-gradient(145deg,#f5eddf 0%,#fdfaf5 42%,#f
 .card-preview-image{width:100%;max-width:880px;display:block;border-radius:16px;border:1px solid #d9c79b;margin:18px auto}
 @media(max-width:900px){.admin-inline-form{grid-template-columns:1fr 1fr}.admin-inline-form button{width:100%}}
 @media(max-width:540px){.admin-inline-form{grid-template-columns:1fr}}
+
+/* QR card masterlist edit workflow */
+.member-edit-panel{margin:24px 0 4px;padding:25px 28px;background:#eff6ed;border:1px solid #b8d2b8;border-radius:16px;box-shadow:0 10px 25px #16472f10;scroll-margin-top:20px}
+.member-edit-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.member-edit-heading h3{margin:4px 0 8px;color:#174931;font:normal 28px/1.25 Georgia,serif}
+.member-edit-heading p{margin:0 0 14px;color:#617265;overflow-wrap:anywhere}
+.member-edit-panel form{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}
+.member-edit-panel form label{margin:0;min-width:0}
+.member-edit-panel form input{font-size:16px;width:100%;max-width:100%}
+.member-edit-panel form .admin-form-note,.member-edit-actions{grid-column:1/-1}
+.member-edit-actions{display:flex;gap:10px;flex-wrap:wrap}
+.member-edit-actions button{width:auto;margin:0;min-height:45px}
+.member-edit-panel .edit-cancel{background:#fff;color:#24573b;border:1px solid #bdd0c0}
+.member-edit-heading .edit-cancel{width:auto;margin:0}
+.admin-dashboard .masterlist-table td:last-child button{white-space:normal;min-height:40px}
+@media(max-width:900px){
+ .member-edit-panel form{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .member-edit-panel form label:nth-child(3){grid-column:1/-1}
+}
+@media(max-width:700px){
+ .admin-dashboard{overflow-x:clip}
+ .admin-dashboard header{padding:13px 16px;gap:10px}
+ .admin-dashboard header .brand img{width:48px;height:48px}
+ .admin-dashboard header .brand b{font-size:18px}
+ .admin-dashboard .portal-page{width:calc(100% - 24px);margin:14px auto 48px}
+ .admin-topbar{padding:24px 20px;border-radius:17px}
+ .admin-dashboard .admin-topbar h1{font-size:clamp(29px,7.3vw,39px);overflow-wrap:anywhere}
+ .admin-top-subtitle{font-size:13px}
+ .admin-accountbar{padding:16px;flex-wrap:wrap}
+ .admin-account-info{min-width:0}
+ .admin-account-info>div{min-width:0}
+ .admin-account-info #who{overflow-wrap:anywhere;font-size:13px}
+ .admin-account-actions{width:100%;display:grid;grid-template-columns:1fr auto;gap:9px}
+ .admin-account-actions .admin-scanner-link{min-height:46px;white-space:normal;text-align:center}
+ .admin-account-actions .admin-signout{min-width:88px;min-height:46px}
+ .admin-dashboard .admin-overview{margin-top:25px}
+ .admin-dashboard .portal-section-heading h2{font-size:clamp(24px,6vw,30px)}
+ .admin-dashboard .admin-stats{gap:10px;margin:15px 0 23px}
+ .admin-dashboard .admin-stat{min-height:106px;padding:15px;border-radius:14px}
+ .admin-dashboard .admin-stat strong{font-size:37px}
+ .admin-dashboard .admin-stat span{font-size:12px}
+ .admin-panel{margin:17px 0;padding:20px 15px;border-radius:16px}
+ .admin-dashboard .admin-section-heading{display:block}
+ .admin-inline-form{grid-template-columns:minmax(0,1fr);gap:13px}
+ .admin-inline-form input,.admin-inline-form select{font-size:16px;min-height:48px}
+ .admin-inline-form button{width:100%;min-height:48px}
+ .masterlist-toolbar{display:grid;grid-template-columns:1fr;gap:10px}
+ .masterlist-toolbar input{max-width:100%;min-width:0;width:100%;min-height:48px;font-size:16px}
+ .masterlist-toolbar button{width:100%;min-height:45px}
+ .admin-dashboard #adminlist .admin-request{padding:18px 15px}
+ .admin-dashboard .admin-data{grid-template-columns:1fr 1fr;gap:12px}
+ .admin-dashboard .admin-actions{display:grid;grid-template-columns:1fr;gap:9px}
+ .admin-dashboard .admin-actions button{width:100%!important;min-height:46px}
+ .admin-dashboard .history-table-wrap{border:0;overflow:visible;box-shadow:none;background:transparent}
+ .admin-dashboard .history-table{display:block;min-width:0!important;width:100%}
+ .admin-dashboard .history-table thead{display:none}
+ .admin-dashboard .history-table tbody{display:grid;gap:12px}
+ .admin-dashboard .history-table tr{display:block;padding:16px;border:1px solid #e6dfd2;border-radius:13px;background:#fff}
+ .admin-dashboard .history-table td{display:block;padding:7px 0!important;border:0!important;overflow-wrap:anywhere}
+ .admin-dashboard .history-table td::before{display:block;font-size:10px;letter-spacing:.07em;font-weight:850;text-transform:uppercase;color:#798579;margin-bottom:3px}
+ .admin-dashboard .history-table:not(.masterlist-table) td:nth-child(1)::before{content:"Customer"}
+ .admin-dashboard .history-table:not(.masterlist-table) td:nth-child(2)::before{content:"Membership"}
+ .admin-dashboard .history-table:not(.masterlist-table) td:nth-child(3)::before{content:"Submitted"}
+ .admin-dashboard .history-table:not(.masterlist-table) td:nth-child(4)::before{content:"Reviewed"}
+ .admin-dashboard .history-table:not(.masterlist-table) td:nth-child(5)::before{content:"Status & actions"}
+ .admin-dashboard .masterlist-table td:nth-child(1)::before{content:"Member / Card number"}
+ .admin-dashboard .masterlist-table td:nth-child(2)::before{content:"Contact"}
+ .admin-dashboard .masterlist-table td:nth-child(3)::before{content:"Membership"}
+ .admin-dashboard .masterlist-table td:nth-child(4)::before{content:"Validity"}
+ .admin-dashboard .masterlist-table td:nth-child(5)::before{content:"Card actions"}
+ .admin-dashboard .masterlist-table td:last-child{display:grid;grid-template-columns:1fr;gap:7px}
+ .admin-dashboard .masterlist-table td:last-child::before{grid-column:1}
+ .admin-dashboard .masterlist-table td:last-child button{width:100%!important;margin:0!important;min-height:43px}
+ .member-edit-panel{padding:19px 15px;margin-top:19px}
+ .member-edit-panel form{grid-template-columns:1fr;gap:13px}
+ .member-edit-panel form label:nth-child(3){grid-column:auto}
+ .member-edit-panel form .admin-form-note,.member-edit-actions{grid-column:1}
+ .member-edit-heading h3{font-size:24px}
+ .member-edit-heading .edit-cancel{font-size:12px;padding:9px}
+ .member-edit-actions{display:grid;grid-template-columns:1fr;gap:9px}
+ .member-edit-actions button{width:100%}
+ .admin-dashboard #qr-preview-code{width:100%;min-width:0;min-height:0;padding:8px}
+ .admin-dashboard #qr-preview-code img{width:100%;height:auto}
+ .admin-dashboard .qr-preview-card button{width:100%;margin:8px 0 0}
+}
+@media(max-width:400px){
+ .admin-dashboard .admin-data{grid-template-columns:1fr}
+ .admin-account-actions{grid-template-columns:1fr}
+ .admin-account-actions .admin-signout{width:100%}
+ .admin-dashboard .admin-stat strong{font-size:32px}
+}
