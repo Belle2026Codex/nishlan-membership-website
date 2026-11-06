@@ -49,15 +49,46 @@ async function loadQrMasterlist(){
  }
  nishlanMasterRecords=all;renderQrMasterlist();
 }
+
+let currentlyEditingMemberId='';
+function editMemberDetails(id){
+ const m=nishlanMasterRecords.find(item=>item.id===id);
+ if(!m)return say('Member not found. Refresh the masterlist.');
+ currentlyEditingMemberId=id;
+ const area=el('member-edit-panel');if(!area)return say('Member editor is unavailable. Please reload.');
+ el('member-edit-name').value=m.full_name||'';
+ el('member-edit-phone').value=m.phone||'';
+ el('member-edit-email').value=m.email||'';
+ el('member-edit-number').textContent='Member number: '+(m.member_number||'—')+' · '+membershipLabel(m)+' · '+membershipValidity(m);
+ area.hidden=false;area.scrollIntoView({behavior:'smooth',block:'center'});
+ el('member-edit-name').focus({preventScroll:true});
+}
+function closeMemberEditor(){currentlyEditingMemberId='';const area=el('member-edit-panel');if(area)area.hidden=true}
+async function saveMemberDetails(){
+ if(!currentlyEditingMemberId)return say('Select a member from the masterlist first.');
+ const id=currentlyEditingMemberId,name=el('member-edit-name').value.trim(),phone=el('member-edit-phone').value.trim(),email=el('member-edit-email').value.trim().toLowerCase();
+ if(name.length<3||name.length>120)return say('Enter a name between 3 and 120 characters.');
+ if(phone.length>30)return say('Contact number must be 30 characters or less.');
+ if(email&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return say('Enter a valid email address.');
+ const button=el('member-edit-save');button.disabled=true;button.textContent='Saving…';say('Updating customer record…');
+ try{
+ const {data,error}=await db.rpc('nishlan_admin_edit_member_contact',{p_member_id:id,p_name:name,p_phone:phone,p_email:email});
+ if(error)throw error;if(!data?.ok)throw Error('The update was not confirmed.');
+ if(window.activeMemberCardId===id){if(currentCardUrl){URL.revokeObjectURL(currentCardUrl);currentCardUrl=''};const preview=el('qr-preview');if(preview)preview.hidden=true}
+ closeMemberEditor();await admin();
+ say('Customer details updated. Original QR and membership number remain unchanged. Use Email card to send the updated card if needed.');
+ }catch(error){say('Unable to update member: '+(error?.message||'Please try again.'))}
+ finally{button.disabled=false;button.textContent='Save changes'}
+}
 function renderQrMasterlist(){
  const target=el('qr-masterlist');if(!target)return;
  const q=(el('masterlist-search')?.value||'').trim().toLowerCase();
- const rows=nishlanMasterRecords.filter(m=>[m.full_name,m.member_number,m.phone,m.membership_type].some(x=>String(x||'').toLowerCase().includes(q)));
+ const rows=nishlanMasterRecords.filter(m=>[m.full_name,m.member_number,m.phone,m.email,m.membership_type].some(x=>String(x||'').toLowerCase().includes(q)));
  if(!rows.length){target.className='admin-empty';target.textContent=nishlanMasterRecords.length?'No memberships match your search.':'No approved memberships yet.';return}
  target.className='history-table-wrap';
  target.innerHTML='<table class="history-table masterlist-table"><thead><tr><th>Member / card number</th><th>Contact</th><th>Membership</th><th>Validity</th><th>Card actions</th></tr></thead><tbody>'+
- rows.map(m=>'<tr><td><strong>'+esc(m.full_name)+'</strong><small>'+esc(m.member_number||'—')+'</small></td><td>'+esc(m.phone||'—')+'<small>'+esc(m.email||'No email · admin-issued')+'</small></td><td>'+esc(membershipLabel(m))+'<small>'+esc(m.registration_source==='admin'?'Created by admin':'Online application')+'</small></td><td>'+esc(membershipValidity(m))+'</td><td><button class="small" data-card="'+esc(m.id)+'">View / download card</button>'+(m.email?'<button class="small" data-email-card="'+esc(m.id)+'">Email card</button>':'')+'</td></tr>').join('')+'</tbody></table>';
- target.onclick=async e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.card)await showMemberCard(b.dataset.card);else if(b.dataset.emailCard)await sendMemberCard(b.dataset.emailCard)};
+ rows.map(m=>'<tr><td><strong>'+esc(m.full_name)+'</strong><small>'+esc(m.member_number||'—')+'</small></td><td>'+esc(m.phone||'—')+'<small>'+esc(m.email||'No email · admin-issued')+'</small></td><td>'+esc(membershipLabel(m))+'<small>'+esc(m.registration_source==='admin'?'Created by admin':'Online application')+'</small></td><td>'+esc(membershipValidity(m))+'</td><td><button class="small" data-edit-member="'+esc(m.id)+'">Edit details</button><button class="small" data-card="'+esc(m.id)+'">View / download card</button>'+(m.email?'<button class="small" data-email-card="'+esc(m.id)+'">Email card</button>':'')+'</td></tr>').join('')+'</tbody></table>';
+ target.onclick=async e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.editMember)editMemberDetails(b.dataset.editMember);else if(b.dataset.card)await showMemberCard(b.dataset.card);else if(b.dataset.emailCard)await sendMemberCard(b.dataset.emailCard)};
 }
 function exportQrMasterlist(){
  if(!nishlanMasterRecords.length)return say('No approved membership records to export.');
